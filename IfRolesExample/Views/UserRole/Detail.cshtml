@@ -1,0 +1,38 @@
+﻿@model IEnumerable<IfRolesExample.Models.UserRoleVM>
+
+@{
+    ViewData["Title"] = "User Roles Detail";
+}
+
+<h3>User: @ViewBag.UserName</h3>
+@ViewBag.Message
+
+<p>
+    @Html.ActionLink( "Assign Roles"
+    , "Create"
+    , new { userName = @ViewBag.UserName })
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Role)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.Role)</td>
+                <td>
+                    <form asp-action="Delete">
+                        <input type="hidden" name="Role" value="@item.Role"/>
+                        <input type="hidden" name="Email" value="@item.Email" />
+                        <input type="hidden" name="ID" value="@item.ID" />
+                        <input type="submit" value="Delete" class="btn btn-danger" /> 
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
