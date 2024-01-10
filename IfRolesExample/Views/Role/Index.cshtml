@@ -1,4 +1,4 @@
-﻿@model IEnumerable<IfRolesExample.Models.RoleVM>
+﻿@model IEnumerable<IfRolesExample.ViewModels.RoleVM>
 
 @{
     ViewData["Title"] = "Index";
@@ -6,16 +6,19 @@
 }
 
 <h1>Roles</h1>
-@ViewBag.Message
+@if (ViewBag.Message.Length> 0)
+{
+    <div class="alert alert-success" role="alert">
+        @ViewBag.Message
+    </div>
+}
+
 <p>
     <a asp-action="Create">Create New</a>
 </p>
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Id)
-            </th>
             <th>
                 @Html.DisplayNameFor(model => model.RoleName)
             </th>
@@ -25,9 +28,6 @@
     <tbody>
 @foreach (var item in Model) {
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Id)
-            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.RoleName)
             </td>

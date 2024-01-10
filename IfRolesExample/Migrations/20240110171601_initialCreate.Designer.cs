@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IfRolesExample.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240108165927_initialCreate")]
+    [Migration("20240110171601_initialCreate")]
     partial class initialCreate
     {
         /// <inheritdoc />
@@ -41,6 +41,40 @@ namespace IfRolesExample.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("MyRegisteredUsers");
+                });
+
+            modelBuilder.Entity("IfRolesExample.ViewModels.RoleVM", b =>
+                {
+                    b.Property<string>("RoleName")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("RoleName");
+
+                    b.ToTable("RoleVM");
+                });
+
+            modelBuilder.Entity("IfRolesExample.ViewModels.UserRoleVM", b =>
+                {
+                    b.Property<string>("Email")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RoleName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Email");
+
+                    b.ToTable("UserRoleVM");
+                });
+
+            modelBuilder.Entity("IfRolesExample.ViewModels.UserVM", b =>
+                {
+                    b.Property<string>("Email")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Email");
+
+                    b.ToTable("UserVM");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

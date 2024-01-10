@@ -1,6 +1,7 @@
 ﻿using IfRolesExample.Data;
-using IfRolesExample.Models;
+using IfRolesExample.ViewModels;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace IfRolesExample.Repositories
@@ -9,41 +10,36 @@ namespace IfRolesExample.Repositories
     {
         private readonly ApplicationDbContext _db;
 
-        public RoleRepo(ApplicationDbContext db)
+        public RoleRepo(ApplicationDbContext context)
         {
-            this._db = db;
+            this._db = context;
             CreateInitialRole();
         }
 
-        public List<RoleVM> GetAllRoles()
+        public IEnumerable<RoleVM> GetAllRoles()
         {
-            var roles = _db.Roles.Select(r => new RoleVM
-            {
-                Id = r.Id,
-                RoleName = r.Name
-            }).ToList();
+            var roles =
+                _db.Roles.Select(r => new RoleVM
+                {
+                    RoleName = r.Name
+                });
 
             return roles;
         }
 
         public RoleVM GetRole(string roleName)
         {
-            var role =
-                _db.Roles.Where(r => r.Name == roleName)
-                              .FirstOrDefault();
+
+
+            var role = _db.Roles.Where(r => r.Name == roleName)
+                                .FirstOrDefault();
 
             if (role != null)
             {
-                return new RoleVM()
-                {
-                    RoleName = role.Name
-                                    ,
-                    Id = role.Id
-                };
+                return new RoleVM() { RoleName = role.Name };
             }
             return null;
         }
-
 
         public bool CreateRole(string roleName)
         {
@@ -53,8 +49,8 @@ namespace IfRolesExample.Repositories
             {
                 _db.Roles.Add(new IdentityRole
                 {
+                    Id = roleName.ToLower(),
                     Name = roleName,
-                    Id = roleName,
                     NormalizedName = roleName.ToUpper()
                 });
                 _db.SaveChanges();
@@ -65,6 +61,21 @@ namespace IfRolesExample.Repositories
             }
 
             return isSuccess;
+        }
+
+        public SelectList GetRoleSelectList()
+        {
+            var roles = GetAllRoles().Select(r => new
+            SelectListItem
+            {
+                Value = r.RoleName,
+                Text = r.RoleName
+            });
+
+            var roleSelectList = new SelectList(roles,
+                                               "Value",
+                                               "Text");
+            return roleSelectList;
         }
 
         public void CreateInitialRole()
@@ -79,14 +90,14 @@ namespace IfRolesExample.Repositories
             }
         }
 
-        public string Delete(string id)
+        public string Delete(string roleName)
         {
-            var role = _db.Roles.FirstOrDefault(r => r.Id == id);
+            var role = _db.Roles.FirstOrDefault(r => r.Name == roleName);
             if (role == null)
             {
                 return "Role not found";
             }
-            if (_db.UserRoles.Any(ur => ur.RoleId == role.Id))
+            if (_db.UserRoles.Any(ur => ur.RoleId == role.Name))
             {
                 return "Role is assigned to a user, cannot delete";
             }
@@ -95,6 +106,11 @@ namespace IfRolesExample.Repositories
             return "Role deleted successfully";
         }
 
+        public bool isRoleAssigned(string roleName)
+        {
+            return _db.UserRoles.Any(ur => ur.RoleId == roleName.ToLower());
+        }
     }
+
 
 }

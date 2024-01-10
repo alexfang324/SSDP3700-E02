@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace IfRolesExample.Models
+namespace IfRolesExample.ViewModels
 {
     public class UserVM
     {

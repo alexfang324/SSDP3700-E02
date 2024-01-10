@@ -66,6 +66,40 @@ namespace IfRolesExample.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "RoleVM",
+                columns: table => new
+                {
+                    RoleName = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RoleVM", x => x.RoleName);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserRoleVM",
+                columns: table => new
+                {
+                    Email = table.Column<string>(type: "TEXT", nullable: false),
+                    RoleName = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserRoleVM", x => x.Email);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserVM",
+                columns: table => new
+                {
+                    Email = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserVM", x => x.Email);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -229,6 +263,15 @@ namespace IfRolesExample.Migrations
 
             migrationBuilder.DropTable(
                 name: "MyRegisteredUsers");
+
+            migrationBuilder.DropTable(
+                name: "RoleVM");
+
+            migrationBuilder.DropTable(
+                name: "UserRoleVM");
+
+            migrationBuilder.DropTable(
+                name: "UserVM");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

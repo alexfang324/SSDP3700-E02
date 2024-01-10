@@ -1,6 +1,6 @@
 ﻿using IfRolesExample.Data;
-using IfRolesExample.Models;
 using IfRolesExample.Repositories;
+using IfRolesExample.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,37 +16,41 @@ namespace IfRolesExample.Controllers
             _db = db;
         }
 
-        public IActionResult Index(string message)
+        public ActionResult Index(string message = "")
         {
-            ViewData["Message"] = message;
-            RoleRepo _roleRepo = new RoleRepo(_db);
-            List<RoleVM> roleList = _roleRepo.GetAllRoles();
-            return View(roleList);
+            ViewBag.Message = message;
+            RoleRepo roleRepo = new RoleRepo(_db);
+            return View(roleRepo.GetAllRoles());
         }
 
-        [HttpGet]
         public ActionResult Create()
         {
             return View();
         }
+
         [HttpPost]
         public ActionResult Create(RoleVM roleVM)
         {
             if (ModelState.IsValid)
             {
                 RoleRepo roleRepo = new RoleRepo(_db);
-                bool isSuccess = roleRepo.CreateRole(roleVM.RoleName);
+                bool isSuccess =
+                    roleRepo.CreateRole(roleVM.RoleName);
 
                 if (isSuccess)
                 {
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction("Index", new { message = "Role Created Successfully" });
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Role creation failed.\n" +
-                                             " The role already exist.");
+                    ModelState
+                    .AddModelError("", "Role creation failed.");
+                    ModelState
+                    .AddModelError("", "The role may already" +
+                                       " exist.");
                 }
             }
+
             return View(roleVM);
         }
 
@@ -61,9 +65,25 @@ namespace IfRolesExample.Controllers
         public IActionResult Delete(RoleVM viewModel)
         {
             RoleRepo roleRepo = new RoleRepo(_db);
-            string repoMessage = roleRepo.Delete(viewModel.Id);
+            bool isRoleAssigned = roleRepo.isRoleAssigned(viewModel.RoleName);
+            string repoMessage = "";
+            if (!isRoleAssigned)
+            {
+                repoMessage = roleRepo.Delete(viewModel.RoleName);
+                return RedirectToAction("Index", new { message = repoMessage });
+            }
+            else
+            {
+                repoMessage = "The role is assigned to a user. Please detach this role from all users first";
+                {
+                    ModelState
+                    .AddModelError("", "Role deletion failed.");
+                    ModelState
+                    .AddModelError("", "The role is assigned to a user. Please detach this role from all users first");
+                }
+            }
+            return View(viewModel);
 
-            return RedirectToAction("Index", new { message = repoMessage });
         }
 
     }
